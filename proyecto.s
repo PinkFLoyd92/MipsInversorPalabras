@@ -2,6 +2,7 @@
         .data
 mensaje1: .asciiz "\"Ingrese la palabra a manejar\n"
 mensaje2: .asciiz "\"Leida palabra con exito \n"
+mensajeInversion:	.asciiz "\"Inicio de inversion de palabra\n"
 texto:
         .space 20	#20 bytes como maximo para palabra
 textoInvertido:
@@ -35,20 +36,27 @@ main:
 	#impresion de longitud
 	li	$v0, 1
 	sub	$a0, $s0, 1	#tenemos la longitud.
-	#syscall			#imprimimos la longitud
-	slt $s2, $s2,$s2
+	syscall			#imprimimos la longitud
+
+	#slt $s2, $s2,$s2
 
 	#validar longitud entre 5 y 20.
-	slt	$s2, 5, $a0	# verificar si a0 > 5
-	beq	$s2, $0, main	#si es falso(a0>5) vamos a main
-	slt 	$s2, $a0, 20	# verificar si a0 <20
-	beq	$s2, $0, main	#si es falso(a0>20) vamos a main
+	slti	$s2, $a0,5	# a0<5? s2= 1 else s2=0
+	bne	$s2, $0, main	# s2 != 0? vamos al main.
+	slti 	$s2, $a0, 21	# a0<21? s2=1 else s2=0
+	beq	$s2, $0, main	#si s2=0 vamos a main
 	j principal_inversion
 	
 principal_inversion:	
 	jal espejo 		#saltamos a la funcion espejo y mostramos la palabra.
-	jr      $raq
 
+	#imprimir mensaje en pantalla
+        add   	$v0 , $0 , 4
+	la    	$a0 , mensajeInversion
+	syscall    #printing mensaje1
+
+	j finalizar
+	
 
 
 	
@@ -62,3 +70,7 @@ espejo:
 	jr $ra
 exit:	
 	jr $ra
+
+finalizar:
+	li $v0, 10
+	syscall
