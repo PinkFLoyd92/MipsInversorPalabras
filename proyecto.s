@@ -86,28 +86,32 @@ pushl:
 
 	
 stend:  li      $t1,0          # indice del primer caracter en el buffer
+	li 	$s0,20
 popl:
         lw      $t0,($sp)      # pop del caracter de la pila.
         addu    $sp,$sp,4
         beqz    $t0,done       # si es 0 la pila esta vacia
 
 	jal	transformarCaracter
-        sb      $t0,texto($t1)   # guardamos el caracter que falta
-        addu    $t1,1          # incrementamos el indice
+        sb      $t0,texto($s0)   # guardamos el caracter que falta
+        addu    $s0,1          # incrementamos el indice
         j       popl           # loop
 
         # imprimir la palabra invertida
-done:   li      $v0,4                    
+done:
+	;; li      $v0,4                    
         la      $a1,texto    	#impresion de la palabra invertida
-        syscall
-        li      $v0,10         # exit
+        ;; syscall
+	li $s2, 20
+	jal imprimirCaracteres
+        li      $v0,10        # exit
         syscall   
 	
 	jr $ra
 exit:	
 	jr $ra
 transformarCaracter:
-	slti	$s2, $t0,98			# t0<98? s2= 1 else s2=0
+	slti	$s2, $t0,97			# t0<98? s2= 1 else s2=0
 	bne	$s2, $0, decrementarCaracter	# s2 != 0? vamos a decrementar.
 	j	incrementarCaracter
 decrementarCaracter:
@@ -119,6 +123,18 @@ incrementarCaracter:
 fin_transformar:	
 	jr $ra
 
+imprimirCaracteres:
+	slti $t4, $s2, 60 #s2<40 1 else 0
+	lb $a0, 1($a1)
+	li $v0, 11    # print_character
+	syscall
+	beq $t4, $zero, finalizarImpresion
+	addi $s2, $s2, 1
+	addi $a1,1
+	j imprimirCaracteres
+finalizarImpresion:	
+	jr $ra
+	
 finalizar:
 	li $v0, 10
 	syscall
