@@ -90,7 +90,8 @@ popl:
         lw      $t0,($sp)      # pop del caracter de la pila.
         addu    $sp,$sp,4
         beqz    $t0,done       # si es 0 la pila esta vacia
-        
+
+	jal	transformarCaracter
         sb      $t0,texto($t1)   # guardamos el caracter que falta
         addu    $t1,1          # incrementamos el indice
         j       popl           # loop
@@ -104,6 +105,18 @@ done:   li      $v0,4
 	
 	jr $ra
 exit:	
+	jr $ra
+transformarCaracter:
+	slti	$s2, $t0,98			# t0<98? s2= 1 else s2=0
+	bne	$s2, $0, decrementarCaracter	# s2 != 0? vamos a decrementar.
+	j	incrementarCaracter
+decrementarCaracter:
+	addi $t0, 32
+	j	fin_transformar
+incrementarCaracter:
+	addi $t0, -32
+	j fin_transformar
+fin_transformar:	
 	jr $ra
 
 finalizar:
