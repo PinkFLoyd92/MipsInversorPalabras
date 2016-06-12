@@ -4,7 +4,7 @@ mensaje1: .asciiz "\"Ingrese la palabra a manejar\n"
 mensaje2: .asciiz "\"Leida palabra con exito \n"
 mensajeInversion:	.asciiz "\"Inicio de inversion de palabra\n"
 texto:
-        .space 20	#20 bytes como maximo para palabra
+        .space 40	#40 bytes como maximo para palabra
 textoInvertido:
 	.space 20
 	
@@ -66,7 +66,42 @@ longitudTexto:
 	addi	$s0, $s0, 1		#aumentamos el contador
 	addi	$a0, $a0, 1		#apuntamos al siguiente valor del string.
 	j 	longitudTexto
+	# texto en $a0
 espejo:
+	la	$a0, texto
+	li      $t0,0          # push un null en la pila
+        subu    $sp,$sp,4      
+        sw      $t0,($sp)      
+	li      $t1,0          # indice del primer caracter
+        # hacer push a caracter
+pushl:
+        lbu     $t0,texto($t1)   # cargar caracter inicial
+        beqz    $t0,stend      # si aparece el byte de null.
+        
+        subu    $sp,$sp,4      # hacemos push a toda la palabra
+        sw      $t0,($sp)      # holding the char
+        
+        addu    $t1,1          # incrementar el indice.
+        j       pushl          # loop
+
+	
+stend:  li      $t1,0          # indice del primer caracter en el buffer
+popl:
+        lw      $t0,($sp)      # pop del caracter de la pila.
+        addu    $sp,$sp,4
+        beqz    $t0,done       # si es 0 la pila esta vacia
+        
+        sb      $t0,texto($t1)   # guardamos el caracter que falta
+        addu    $t1,1          # incrementamos el indice
+        j       popl           # loop
+
+        # imprimir la palabra invertida
+done:   li      $v0,4                    
+        la      $a1,texto    	#impresion de la palabra invertida
+        syscall
+        li      $v0,10         # exit
+        syscall   
+	
 	jr $ra
 exit:	
 	jr $ra
