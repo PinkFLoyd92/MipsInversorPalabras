@@ -34,9 +34,9 @@ main:
 	jal longitudTexto
 	
 	#impresion de longitud
-	li	$v0, 1
-	sub	$a0, $s0, 1	#tenemos la longitud.
-	syscall			#imprimimos la longitud
+	 li	$v0, 1
+	 sub	$a0, $s0, 1	#tenemos la longitud.
+	# syscall			#imprimimos la longitud
 
 	#slt $s2, $s2,$s2
 
@@ -99,9 +99,9 @@ popl:
 
         # imprimir la palabra invertida
 done:
-	;; li      $v0,4                    
+	li      $v0,4                    
         la      $a1,texto    	#impresion de la palabra invertida
-        ;; syscall
+        #syscall
 	li $s2, 20
 	jal imprimirCaracteres
         li      $v0,10        # exit
@@ -125,7 +125,7 @@ fin_transformar:
 
 imprimirCaracteres:
 	slti $t4, $s2, 60 #s2<40 1 else 0
-	lb $a0, 1($a1)
+	lb $a0, 0($a1)
 	li $v0, 11    # print_character
 	syscall
 	beq $t4, $zero, finalizarImpresion
